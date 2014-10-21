@@ -28,7 +28,7 @@ class AuditableBehavior extends ModelBehavior {
    * @param   object  $Model      Model using the behavior
    * @param   array   $settings   Settings overrides.
    */
-  public function setup( $Model, $settings = array() ) {
+  public function setup( Model $Model, $settings = array() ) {
     if( !isset( $this->settings[$Model->alias] ) ) {
       $this->settings[$Model->alias] = array(
         'ignore' => array( 'created', 'updated', 'modified' ),
@@ -64,7 +64,7 @@ class AuditableBehavior extends ModelBehavior {
    * @return  boolean
    * @access  public
    */
-  public function beforeSave( $Model ) {
+  public function beforeSave( Model$Model, $options = array() ) {
     # If we're editing an existing object, save off a copy of
     # the object as it exists before any changes.
     if( !empty( $Model->id ) ) {
@@ -81,7 +81,7 @@ class AuditableBehavior extends ModelBehavior {
    * @return	boolean
    * @access	public
    */
-  public function beforeDelete( $Model, $cascade = true ) {
+  public function beforeDelete( Model $Model, $cascade = true ) {
     $this->_original = $Model->find(
       'first',
       array(
@@ -101,7 +101,7 @@ class AuditableBehavior extends ModelBehavior {
    *                    insertion. False otherwise.
    * @return  void
    */
-  public function afterSave( $Model, $created ) {
+  public function afterSave( Model $Model, $created, $options = array() ) {
     $audit = $this->_getModelData( $Model );
     $audit[$Model->alias][$Model->primaryKey] = $Model->id;
 
@@ -234,7 +234,7 @@ class AuditableBehavior extends ModelBehavior {
    * @return	void
    * @access	public
    */
-  public function afterDelete( $Model ) {
+  public function afterDelete( Model $Model ) {
     /**
      * If a currentUser() method exists in the model class (or, of
      * course, in a superclass) the call that method to pull all user
@@ -273,7 +273,7 @@ class AuditableBehavior extends ModelBehavior {
    * @param   $Model
    * @return  array
    */
-  private function _getModelData( $Model ) {
+  private function _getModelData( Model $Model ) {
     /**
      * Retrieve the model data along with its appropriate HABTM
      * model data.
